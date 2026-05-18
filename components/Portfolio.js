@@ -150,7 +150,7 @@ function VideoCard({ item, index }) {
               {item.roles.map((role) => (
                 <span
                   key={role}
-                  className="font-scoreboard text-[10px] text-royal/70 border border-royal/20 px-2 py-0.5 tracking-wider"
+                  className="font-scoreboard text-[10px] text-white/80 border border-white/20 px-2 py-0.5 tracking-wider"
                 >
                   {role}
                 </span>
