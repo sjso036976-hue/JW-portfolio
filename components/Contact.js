@@ -8,8 +8,8 @@ const contactLinks = [
   {
     icon: Mail,
     label: "EMAIL",
-    value: "maytrue0@naver.com",
-    href: "mailto:maytrue0@naver.com",
+    value: "may_true0@naver.com",
+    href: "mailto:may_true0@naver.com",
     color: "text-blue-400",
     borderColor: "border-blue-400/20",
     hoverBorder: "hover:border-blue-400/50",
