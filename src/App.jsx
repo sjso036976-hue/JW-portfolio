@@ -1,386 +1,629 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowUpRight, MapPin, Bell, Award, ChevronRight, Mail, Github, ExternalLink } from 'lucide-react';
 
-import React, { useState, useEffect } from 'react';
-import { Play, ChevronRight, Mail, Instagram, Youtube, ArrowUpRight, Camera, Mic, Clapperboard } from 'lucide-react';
+// ─── Reusable Components ──────────────────────────────────────────────────────
 
-const App = () => {
-  const [activeTab, setActiveTab] = useState('All');
-
-  const projects = [
-    {
-      id: '01',
-      title: '당근이세요?',
-      category: 'Cinematic',
-      size: 'large',
-      thumbnail: 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6ee?auto=format&fit=crop&q=80&w=1200',
-      description: '당근거래자가 이상하다?! 미스테리한 현장을 담은 단편 시네마.',
-      roles: ['기획', '촬영', '편집', '연출', '대본'],
-      color: 'from-rose-500/20 to-transparent',
-      link: 'https://youtu.be/r_0z11OQ9rA?si=GW-KSj2lHnGbQKl_' 
-    },
-    {
-      id: '02',
-      title: '양초',
-      category: 'Cinematic',
-      size: 'small',
-      thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800',
-      description: '바람피우는 여자친구를 잡는 법!',
-      roles: ['기획', '촬영', '대본'],
-      color: 'from-blue-500/20 to-transparent',
-      link: '#'
-    },
-    {
-      id: '03',
-      title: '틈',
-      category: 'Cinematic',
-      size: 'small',
-      thumbnail: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=800',
-      description: '홀로 감내해야했던 고통 속 내밀어지는 손',
-      roles: ['기획', '연출', '촬영'],
-      color: 'from-amber-500/20 to-transparent',
-      link: '#'
-    },
-    {
-      id: '04',
-      title: 'SEBS Stock Race',
-      category: 'Variety',
-      size: 'medium',
-      thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=1000',
-      description: '주식 레이스를 통해 결정되는 상속자! 셉스스탁레이스',
-      roles: ['기획', '연출', '촬영', '편집', '그래픽 디자인'],
-      color: 'from-emerald-500/20 to-transparent',
-      link: 'https://youtu.be/z-HC8O-JFVo?si=hYnhYgDQzgPLpoHj'
-    },
-    {
-      id: '05',
-      title: '여대추리반',
-      category: 'Entertainment',
-      size: 'medium',
-      thumbnail: 'https://images.unsplash.com/photo-1489411032822-26127e997f6c?auto=format&fit=crop&q=80&w=1000',
-      description: '수상한 취업 캠프의 진실을 밝하라. 미스테리 추리반의 스토리',
-      roles: ['기획', '촬영', '연출', '편집'],
-      color: 'from-orange-500/20 to-transparent',
-      link: '#'
-    },
-    {
-      id: '06',
-      title: '환승고향',
-      category: 'Variety',
-      size: 'small',
-      thumbnail: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=800',
-      description: '고향도 환승할 수 있을까? 본격 고향 자랑 콘텐츠',
-      roles: ['기획', '촬영', '연출', '편집', '출연'],
-      color: 'from-indigo-500/20 to-transparent',
-      link: 'https://youtu.be/gZ1aq7uVbU4?si=hWumkcCiNIfWLYqN'
-    },
-    {
-      id: '07',
-      title: '[2025 SEBS 기획취재] 동결되지 않은 것들 : 등록금의 무게와 변화의 목소리',
-      category: 'Documentary',
-      size: 'small',
-      thumbnail: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800',
-      description: '대학 등록금 동결 뒤에 숨겨진 학생들의 목소리를 담은 다큐멘터리.',
-      roles: ['기획', '촬영', '그래픽 디자인'],
-      color: 'from-pink-500/20 to-transparent',
-      link: '#'
-    },
-    {
-      id: '08',
-      title: '날개를 만드는 법',
-      category: 'Art Film',
-      size: 'large',
-      thumbnail: 'https://images.unsplash.com/photo-1541339907198-e08756eaa83e?auto=format&fit=crop&q=80&w=1200',
-      description: '형태 없는 생각들의 시각적 조각.',
-      roles: ['기획', '촬영', '연출', '편집'],
-      color: 'from-cyan-500/20 to-transparent',
-      link: 'https://youtu.be/xdxUdqJnuoY?si=9u9K3MGGvsUcj3pN'
-    }
-  ];
-
-  const handleProjectClick = (link) => {
-    if (link && link !== '#') {
-      window.open(link, '_blank', 'noopener,noreferrer');
-    }
+const Tag = ({ children, color = 'blue' }) => {
+  const colors = {
+    blue: 'bg-blue-50 text-blue-600 border-blue-100',
+    purple: 'bg-purple-50 text-purple-600 border-purple-100',
+    green: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    orange: 'bg-orange-50 text-orange-600 border-orange-100',
   };
-
   return (
-    <div className="min-h-screen bg-[#000000] text-[#f5f5f7] font-sans antialiased selection:bg-blue-500/30">
-      {/* Apple-style Global Nav */}
-      <nav className="fixed top-0 w-full z-[100] bg-black/70 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-[1200px] mx-auto px-6 h-12 flex items-center justify-between">
-          <div className="text-lg font-semibold tracking-tight cursor-pointer hover:opacity-70 transition-opacity">
-            Visual Studio
-          </div>
-          <div className="hidden md:flex gap-8 text-[12px] font-medium text-zinc-400">
-            {['Showreel', 'Works', 'About', 'Contact'].map(item => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-white transition-colors">{item}</a>
-            ))}
-          </div>
-          <button className="bg-[#0071e3] hover:bg-[#0077ed] text-white px-3 py-1 rounded-full text-[12px] font-medium transition-all">
-            Inquiry
-          </button>
-        </div>
-      </nav>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${colors[color]}`}>
+      {children}
+    </span>
+  );
+};
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-        <div className="z-10 max-w-4xl">
-          <h1 className="text-[14vw] md:text-[160px] font-bold tracking-tighter leading-none mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 animate-reveal">
-            Immersive.
-          </h1>
-          <p className="text-xl md:text-2xl text-zinc-400 font-medium tracking-tight mb-10 max-w-2xl mx-auto opacity-0 animate-[fadeInUp_1s_ease_0.5s_forwards]">
-            영상의 경계를 넘어선 감각의 확장. <br/> 8개의 프레임으로 증명하는 압도적 몰입감.
-          </p>
-          <div className="flex justify-center gap-6 opacity-0 animate-[fadeInUp_1s_ease_0.8s_forwards]">
-            <button className="group flex items-center gap-2 bg-white text-black px-8 py-3.5 rounded-full font-semibold hover:bg-zinc-200 transition-all active:scale-95">
-              <Play size={18} fill="black" /> 2026 Showreel
-            </button>
+const StatCard = ({ label, value }) => (
+  <div className="flex-1 min-w-[140px] border border-gray-100 rounded-2xl px-5 py-4 bg-white">
+    <div className="text-xs text-gray-400 font-medium mb-1">{label}</div>
+    <div className="text-sm font-semibold text-gray-800">{value}</div>
+  </div>
+);
+
+const SectionBadge = ({ number, children }) => (
+  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold">
+    개선 {number}. {children}
+  </span>
+);
+
+const CompareLabel = ({ type }) => (
+  <div className={`text-center text-xs font-semibold py-1.5 px-4 rounded-full mb-3 inline-block ${
+    type === 'AS-IS'
+      ? 'bg-gray-100 text-gray-500'
+      : 'bg-blue-600 text-white'
+  }`}>
+    {type}
+  </div>
+);
+
+// ─── Phone Mockups ────────────────────────────────────────────────────────────
+
+const PhoneFrame = ({ children }) => (
+  <div className="relative mx-auto w-[160px] drop-shadow-xl">
+    <div className="bg-gray-900 rounded-[28px] p-[3px]">
+      <div className="bg-white rounded-[25px] overflow-hidden" style={{ height: 300 }}>
+        {/* Status bar */}
+        <div className="bg-white px-4 pt-3 pb-1 flex items-center justify-between">
+          <span className="text-[8px] font-semibold text-gray-800">9:41</span>
+          <div className="flex items-center gap-0.5">
+            <div className="w-4 h-[6px] bg-gray-800 rounded-sm text-[4px] flex items-center justify-end pr-0.5">
+              <div className="w-3 h-[4px] bg-gray-800 rounded-sm"></div>
+            </div>
           </div>
         </div>
-        
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] -z-10"></div>
-      </section>
+        {children}
+      </div>
+    </div>
+  </div>
+);
 
-      {/* Projects Grid */}
-      <section id="works" className="max-w-[1200px] mx-auto px-6 py-32">
-        <div className="flex flex-col md:flex-row items-baseline justify-between mb-20 gap-4">
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Recent Projects</h2>
-          <p className="text-zinc-500 font-medium">8 Selected Works / 2025-2026</p>
+const FriendListMockup = () => (
+  <PhoneFrame>
+    <div className="px-3 pb-2">
+      <div className="text-[10px] font-bold text-gray-800 mb-2">친구 현황</div>
+      {[
+        { name: '바락식혜', km: '5.01 km', time: '1분 전' },
+        { name: '버터블랙주', km: '7 km', time: '15분 전' },
+        { name: '하늘보리', km: '2.45 km', time: '1시간 전' },
+        { name: '날땡마', km: '—', time: '3일 전' },
+      ].map((f, i) => (
+        <div key={i} className="flex items-center gap-2 py-1.5 border-b border-gray-50">
+          <div className="w-6 h-6 rounded-full bg-gray-200 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <div className="text-[8px] font-semibold text-gray-800 truncate">{f.name}</div>
+            <div className="text-[7px] text-gray-400">{f.km}</div>
+          </div>
+          <div className="text-[7px] text-gray-400 flex-shrink-0">{f.time}</div>
         </div>
+      ))}
+    </div>
+  </PhoneFrame>
+);
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          {projects.map((p) => (
-            <div 
-              key={p.id}
-              onClick={() => handleProjectClick(p.link)}
-              className={`group relative overflow-hidden rounded-[2.5rem] bg-[#1d1d1f] border border-white/5 cursor-pointer 
-                ${p.size === 'large' ? 'md:col-span-12' : p.size === 'medium' ? 'md:col-span-8' : 'md:col-span-4'}
-                aspect-square md:aspect-auto md:h-[500px] transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10`}
-            >
-              {/* Background Image & Overlay */}
-              <div className="absolute inset-0">
-                <img 
-                  src={p.thumbnail} 
-                  alt={p.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" 
-                />
-                <div className={`absolute inset-0 bg-gradient-to-t ${p.color} via-black/20 to-transparent opacity-60`}></div>
+const FriendMapMockup = () => (
+  <PhoneFrame>
+    {/* Map background */}
+    <div className="relative mx-2 mb-2 rounded-xl overflow-hidden" style={{ height: 130 }}>
+      <div className="absolute inset-0 bg-gradient-to-br from-green-100 via-green-50 to-blue-100">
+        {/* Map lines */}
+        <div className="absolute top-8 left-4 right-4 h-0.5 bg-white/60 rounded" />
+        <div className="absolute top-16 left-2 right-8 h-0.5 bg-white/60 rounded" />
+        <div className="absolute left-12 top-2 bottom-2 w-0.5 bg-white/60 rounded" />
+        {/* Location pins */}
+        <div className="absolute top-5 left-8 w-5 h-5 bg-blue-500 rounded-full border-2 border-white shadow flex items-center justify-center">
+          <div className="w-2 h-2 bg-white rounded-full" />
+        </div>
+        <div className="absolute top-12 right-8 w-5 h-5 bg-orange-400 rounded-full border-2 border-white shadow flex items-center justify-center">
+          <div className="w-2 h-2 bg-white rounded-full" />
+        </div>
+        <div className="absolute bottom-4 left-16 w-5 h-5 bg-purple-500 rounded-full border-2 border-white shadow flex items-center justify-center">
+          <div className="w-2 h-2 bg-white rounded-full" />
+        </div>
+      </div>
+    </div>
+    {/* Friend list with location */}
+    <div className="px-3">
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="text-[10px] font-bold text-gray-800">친구 현황</div>
+        <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
+          <span className="text-[6px]">👥</span>
+        </div>
+      </div>
+      {[
+        { name: '바락식혜', info: '1.0km / 경기 광명', color: 'bg-blue-500', badge: '1분 전' },
+        { name: '버터블랙주', info: '7.36km / 서울 마포', color: 'bg-orange-400', badge: '15분 전' },
+        { name: '하늘보리', info: '최신 러닝 기록이 없어요', color: 'bg-purple-500', btn: true },
+      ].map((f, i) => (
+        <div key={i} className="flex items-center gap-1.5 py-1 border-b border-gray-50">
+          <div className={`w-5 h-5 rounded-full ${f.color} flex-shrink-0 border border-white`} />
+          <div className="flex-1 min-w-0">
+            <div className="text-[8px] font-semibold text-gray-800">{f.name}</div>
+            <div className="text-[6px] text-gray-400 truncate">{f.info}</div>
+          </div>
+          {f.btn ? (
+            <div className="text-[6px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">깨우기</div>
+          ) : (
+            <div className="text-[6px] text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-full flex-shrink-0">{f.badge}</div>
+          )}
+        </div>
+      ))}
+    </div>
+  </PhoneFrame>
+);
+
+const WakeupAsisMockup = () => (
+  <PhoneFrame>
+    <div className="flex flex-col items-center justify-center h-[250px] px-4">
+      <div className="w-14 h-14 rounded-full bg-gray-100 mb-3 flex items-center justify-center">
+        <span className="text-2xl">😴</span>
+      </div>
+      <div className="text-[9px] font-semibold text-gray-700 mb-3">민희</div>
+      <div className="text-[8px] text-gray-500 mb-3">3일 째 인증이 없어요</div>
+      <button className="text-[7px] bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full font-medium">
+        꼭 찌르기
+      </button>
+    </div>
+  </PhoneFrame>
+);
+
+const WakeupTobeMockup = () => (
+  <PhoneFrame>
+    {/* Map */}
+    <div className="relative mx-2 mb-2 rounded-xl overflow-hidden" style={{ height: 110 }}>
+      <div className="absolute inset-0 bg-gradient-to-br from-green-100 via-green-50 to-blue-100">
+        <div className="absolute top-8 left-4 right-4 h-0.5 bg-white/60 rounded" />
+        <div className="absolute left-12 top-2 bottom-2 w-0.5 bg-white/60 rounded" />
+        <div className="absolute top-4 left-6 w-5 h-5 bg-blue-500 rounded-full border-2 border-white shadow flex items-center justify-center">
+          <div className="w-2 h-2 bg-white rounded-full" />
+        </div>
+        <div className="absolute top-10 right-6 w-5 h-5 bg-orange-400 rounded-full border-2 border-white shadow flex items-center justify-center">
+          <div className="w-2 h-2 bg-white rounded-full" />
+        </div>
+      </div>
+    </div>
+    <div className="px-3">
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="text-[10px] font-bold text-gray-800">친구 현황</div>
+      </div>
+      {[
+        { name: '바락식혜', info: '1.0km / 경기 광명', color: 'bg-blue-500' },
+        { name: '버터블랙주', info: '최신 러닝 기록이 없어요', color: 'bg-orange-400', zzz: true },
+        { name: '하늘보리', info: '최신 러닝 기록이 없어요', color: 'bg-purple-500', zzz: true, btn: true },
+      ].map((f, i) => (
+        <div key={i} className="flex items-center gap-1.5 py-1 border-b border-gray-50">
+          <div className="relative flex-shrink-0">
+            <div className={`w-5 h-5 rounded-full ${f.color} border border-white`} />
+            {f.zzz && <div className="absolute -top-1 -right-1 text-[6px] bg-gray-800 text-white rounded-full w-3 h-3 flex items-center justify-center">z</div>}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[8px] font-semibold text-gray-800">{f.name}</div>
+            <div className="text-[6px] text-gray-400 truncate">{f.info}</div>
+          </div>
+          {f.btn && (
+            <div className="text-[6px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">깨우기</div>
+          )}
+        </div>
+      ))}
+    </div>
+  </PhoneFrame>
+);
+
+const LeaderboardMockup = () => (
+  <PhoneFrame>
+    <div className="px-3 pb-2">
+      <div className="text-[9px] font-semibold text-gray-800 mb-2">홈</div>
+      <div className="flex items-center gap-1 mb-3 text-[7px]">
+        {['나', '달리기', '인증피드', '랭킹'].map((t, i) => (
+          <span key={i} className={`px-2 py-0.5 rounded-full ${i === 0 ? 'bg-blue-600 text-white' : 'text-gray-400'}`}>{t}</span>
+        ))}
+      </div>
+      <div className="text-[8px] text-gray-400 text-center mb-1">2025.10.15</div>
+      <div className="text-center mb-3">
+        <div className="text-[8px] text-gray-400">나 달린</div>
+        <div className="text-lg font-bold text-gray-800">5.01km</div>
+        <div className="text-[8px] text-gray-500">00:36:47</div>
+        <div className="text-[8px] text-gray-500">06'39"</div>
+      </div>
+      <div className="flex justify-center">
+        <div className="text-[8px] text-gray-300">⓪</div>
+      </div>
+    </div>
+  </PhoneFrame>
+);
+
+const FeedMockup = () => (
+  <PhoneFrame>
+    <div className="px-3 pb-2">
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-[9px] font-semibold text-gray-800">인증피드</div>
+        <div className="flex gap-1">
+          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-[6px]">👥</div>
+          <div className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-[6px]">🔔</div>
+        </div>
+      </div>
+      {/* Week calendar */}
+      <div className="bg-gray-50 rounded-xl p-2 mb-2">
+        <div className="text-[7px] font-semibold text-gray-700 mb-1">10월 2주차</div>
+        <div className="flex justify-between">
+          {['일','월','화','수','목','금','토'].map((d, i) => (
+            <div key={i} className="flex flex-col items-center gap-0.5">
+              <div className="text-[5px] text-gray-400">{d}</div>
+              <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[5px] font-bold ${i === 4 ? 'bg-blue-600 text-white' : 'bg-white text-gray-600'}`}>
+                {11 + i}
               </div>
-
-              {/* Content */}
-              <div className="absolute inset-0 p-10 flex flex-col justify-end items-start">
-                <div className="mb-auto">
-                   <span className="text-[12px] font-bold uppercase tracking-widest text-white/40 bg-white/5 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-                    {p.category}
-                  </span>
-                </div>
-                <div className="w-full transform transition-transform duration-500 group-hover:-translate-y-2">
-                  <div className="flex items-center justify-between w-full mb-2">
-                    <h3 className="text-3xl md:text-5xl font-bold tracking-tight group-hover:underline decoration-blue-500 underline-offset-8">
-                      {p.title}
-                    </h3>
-                    <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowUpRight size={20} />
-                    </div>
-                  </div>
-                  <p className="text-lg text-zinc-400 max-w-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-4">
-                    {p.description}
-                  </p>
-                  
-                  {/* 추가된 역할(Role) 태그 섹션 */}
-                  <div className="flex flex-wrap gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
-                    {p.roles && p.roles.map((role, index) => (
-                      <span key={index} className="text-[11px] font-medium px-2.5 py-1 rounded border border-zinc-700 bg-zinc-900/50 text-zinc-300">
-                        {role}
-                      </span>
-                    ))}
-                  </div>
-
-                </div>
-              </div>
+              <div className="text-[5px] text-blue-500">{i < 4 ? '+' + (i+1) : i === 4 ? '+11' : ''}</div>
             </div>
           ))}
         </div>
-      </section>
-
-      {/* Expertise Section */}
-      <section className="bg-[#1d1d1f] py-40 px-6">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="grid md:grid-cols-2 gap-20 items-center">
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-              감동을 만드는 <br/> <span className="text-zinc-500">정교한 디테일.</span>
-            </h2>
-            <div className="space-y-12">
-              {[
-                { title: 'Variety Production', desc: '시청자의 눈길을 사로잡는 재치 있는 편집과 구성 능력을 갖추고 있습니다.' },
-                { title: 'Cinematic Direction', desc: '스토리의 본질을 꿰뚫는 연출로 관객을 압도합니다.' },
-                { title: 'Motion Graphics', desc: '예능의 재미를 배가시키는 역동적인 자막과 그래픽을 구현합니다.' }
-              ].map((skill, i) => (
-                <div key={i} className="group cursor-default">
-                  <h4 className="text-xl font-bold mb-3 flex items-center gap-3">
-                    <span className="text-blue-500 text-sm font-mono">0{i+1}</span>
-                    {skill.title}
-                  </h4>
-                  <p className="text-zinc-400 leading-relaxed">{skill.desc}</p>
-                </div>
-              ))}
-            </div>
+      </div>
+      <div className="flex items-center gap-1 mb-2">
+        <div className="flex -space-x-1">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="w-4 h-4 rounded-full bg-blue-400 border border-white" />
+          ))}
+        </div>
+        <div className="text-[7px] text-gray-600">11명이 인증했어요!</div>
+      </div>
+      {/* Feed card */}
+      <div className="rounded-xl overflow-hidden border border-gray-100">
+        <div className="flex items-center gap-1.5 p-2">
+          <div className="w-4 h-4 rounded-full bg-blue-500" />
+          <div className="text-[7px] font-semibold text-gray-800">바락식혜</div>
+          <div className="text-[6px] text-gray-400 ml-auto">1분 전</div>
+        </div>
+        <div className="bg-green-50 h-12 flex items-end p-1.5">
+          <div className="flex gap-2 text-[6px] text-gray-600">
+            <span>8.02km</span>
+            <span>1:52:06</span>
           </div>
         </div>
-      </section>
-
-      {/* Experience & Impact Section (About) */}
-      <section id="about" className="py-40 px-6">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="mb-20">
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">Beyond the Frame.</h2>
-            <p className="text-zinc-500 font-medium text-lg max-w-2xl">
-              카메라 안팎을 넘나들며 쌓아온 제작 경험과, 직접 채널을 운영하며 증명한 성장의 기록입니다.
-            </p>
-          </div>
-
-          {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-[#1d1d1f] rounded-[2.5rem] p-10 border border-white/5 flex flex-col justify-between h-[240px] hover:bg-[#252528] transition-colors cursor-default">
-              <div className="flex justify-between items-start mb-4">
-                <div className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Instagram</div>
-                <Instagram size={24} className="text-pink-500" />
-              </div>
-              <div>
-                <div className="text-6xl md:text-8xl font-bold text-white tracking-tighter mb-2">796<span className="text-pink-500">+</span></div>
-                <div className="text-zinc-400 font-medium">직접 채널을 운영하며 시각적 소통을 통해 모은 팔로워</div>
-              </div>
-            </div>
-            <div className="bg-[#1d1d1f] rounded-[2.5rem] p-10 border border-white/5 flex flex-col justify-between h-[240px] hover:bg-[#252528] transition-colors cursor-default">
-              <div className="flex justify-between items-start mb-4">
-                <div className="text-sm font-bold text-zinc-500 uppercase tracking-widest">YouTube</div>
-                <Youtube size={24} className="text-red-500" />
-              </div>
-              <div>
-                <div className="text-6xl md:text-8xl font-bold text-white tracking-tighter mb-2">198<span className="text-red-500">+</span></div>
-                <div className="text-zinc-400 font-medium">유튜브 콘텐츠 기획 및 제작을 통해 달성한 구독자 수</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Career Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* 1. Content Production */}
-            <div className="bg-[#1d1d1f] rounded-[2.5rem] p-10 border border-white/5 hover:border-white/10 transition-all">
-              <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-8 border border-white/10">
-                <Clapperboard size={20} className="text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-8 tracking-tight">Content Production</h3>
-              <ul className="space-y-5 text-sm leading-relaxed">
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">단편 드라마 & 아트필름 제작</span>
-                  <span className="text-zinc-500">기획, 시나리오, 연출, 촬영, 편집</span>
-                </li>
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">유튜브 & 기획 취재 영상 제작</span>
-                  <span className="text-zinc-500">기획, 촬영, 편집, 그래픽 제작</span>
-                </li>
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">교내 뉴스 제작</span>
-                  <span className="text-zinc-500">기획, 촬영, 편집</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 2. Live & Event */}
-            <div className="bg-[#1d1d1f] rounded-[2.5rem] p-10 border border-white/5 hover:border-white/10 transition-all">
-              <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-8 border border-white/10">
-                <Camera size={20} className="text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-8 tracking-tight">Live & Event</h3>
-              <ul className="space-y-5 text-sm leading-relaxed">
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">성신여대 대동제(축제) 카메라 총괄</span>
-                  <span className="text-zinc-500">2024 녹화 / 2025 실시간 송출 담당</span>
-                </li>
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">제50회 방송제 행사 개최</span>
-                  <span className="text-zinc-500">기획, 디자인, 현장 스태프 총괄</span>
-                </li>
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">학내 언론 행사 주최</span>
-                  <span className="text-zinc-500">행사 기획 및 현장 스태프 담당</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 3. Audio & Institutional */}
-            <div className="bg-[#1d1d1f] rounded-[2.5rem] p-10 border border-white/5 hover:border-white/10 transition-all">
-              <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-8 border border-white/10">
-                <Mic size={20} className="text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-8 tracking-tight">Audio & Institutional</h3>
-              <ul className="space-y-5 text-sm leading-relaxed">
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">교내 오디오 방송 기획 및 송출</span>
-                  <span className="text-zinc-500">대본, 엔지니어, 아나운서 / 2025-2 일정표 총괄</span>
-                </li>
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">2025 수강신청 안내 영상 제작</span>
-                  <span className="text-zinc-500">교무처 학사운영팀, 창의융합대학 교학팀 협업</span>
-                </li>
-                <li className="flex flex-col gap-1.5">
-                  <span className="text-white font-semibold">2025 제21대 대선 안내 영상</span>
-                  <span className="text-zinc-500">편집 및 그래픽 제작</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-40 px-6 text-center overflow-hidden">
-        <div className="max-w-4xl mx-auto relative">
-          <h2 className="text-[12vw] md:text-[180px] font-bold tracking-tighter leading-none mb-20 opacity-10 select-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
-            CONNECT
-          </h2>
-          <div className="relative z-10">
-            <p className="text-2xl font-medium mb-10 tracking-tight">새로운 시각적 여정을 시작할 준비가 되셨나요?</p>
-            <a href="mailto:hello@visual.studio" className="inline-block text-4xl md:text-6xl font-bold tracking-tighter border-b-4 border-blue-600 pb-2 hover:text-blue-500 transition-all mb-16">
-              hello@visual.studio
-            </a>
-            <div className="flex justify-center gap-10 text-zinc-500">
-              <Instagram className="cursor-pointer hover:text-white transition-colors" />
-              <Youtube className="cursor-pointer hover:text-white transition-colors" />
-              <Mail className="cursor-pointer hover:text-white transition-colors" />
-            </div>
-          </div>
-        </div>
-        <div className="mt-40 text-[11px] font-medium text-zinc-600 uppercase tracking-[0.3em]">
-          © 2026 Visual Studio. All Rights Reserved.
-        </div>
-      </footer>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes reveal {
-          from { clip-path: inset(100% 0 0 0); transform: translateY(50px); }
-          to { clip-path: inset(0 0 0 0); transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-reveal {
-          animation: reveal 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        }
-        body {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-          background-color: #000;
-        }
-        body::-webkit-scrollbar {
-          display: none;
-        }
-        .tracking-tighter { letter-spacing: -0.05em; }
-        .tracking-tight { letter-spacing: -0.02em; }
-      `}} />
+      </div>
     </div>
+  </PhoneFrame>
+);
+
+// ─── Section Components ───────────────────────────────────────────────────────
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const Improvement1 = () => (
+  <motion.div
+    initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}
+    variants={fadeUp}
+    className="bg-blue-50/50 rounded-3xl p-8 md:p-12"
+  >
+    <div className="grid md:grid-cols-2 gap-10 items-center">
+      {/* Text */}
+      <div>
+        <SectionBadge number="1">친구 러닝 현황</SectionBadge>
+        <h3 className="mt-4 text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
+          자극 받고 꾸준히 달릴 수 있도록,<br />
+          <span className="text-blue-600">위치 시각화를 통해 '함께 달리는 경험'</span>을<br />
+          강화했어요
+        </h3>
+        <p className="mt-4 text-gray-500 text-sm leading-relaxed">
+          이전에는 친구들의 달린 기록만 보여 서로의 러닝 현황을 한 눈에 보기 어려웠어요.
+          이에 기록과 함께 달린 위치와 상태를 추가해 '함께 달리는 느낌'을 높이고 동기부여를 강화했어요.
+        </p>
+        <p className="mt-2 text-gray-400 text-xs leading-relaxed">
+          Previously, only friends' records were shown, making it hard to see everyone's running status.
+          We added their running location and status to create a shared running experience and boost motivation.
+        </p>
+      </div>
+      {/* Mockups */}
+      <div className="flex gap-6 justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <CompareLabel type="AS-IS" />
+          <FriendListMockup />
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <CompareLabel type="TO-BE" />
+          <FriendMapMockup />
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const Improvement2 = () => (
+  <motion.div
+    initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}
+    variants={fadeUp}
+    className="bg-gray-50 rounded-3xl p-8 md:p-12"
+  >
+    <div className="grid md:grid-cols-2 gap-10 items-center">
+      {/* Mockups first on mobile, second on desktop */}
+      <div className="flex gap-6 justify-center md:order-first">
+        <div className="flex flex-col items-center gap-3">
+          <CompareLabel type="AS-IS" />
+          <WakeupAsisMockup />
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <CompareLabel type="TO-BE" />
+          <WakeupTobeMockup />
+        </div>
+      </div>
+      {/* Text */}
+      <div>
+        <SectionBadge number="2">깨우기 알림</SectionBadge>
+        <h3 className="mt-4 text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
+          양방향 소통이 더 쉽도록{' '}
+          <span className="text-blue-600">'깨우기' 알림의<br />위치와 표현을 다듬었어요</span>
+        </h3>
+        <p className="mt-4 text-gray-500 text-sm leading-relaxed">
+          이전에는 깨우기 기능이 피드에 있어 기록과 섞여 눌러보기 어려웠어요.
+          이에 기능을 친구 현황으로 옮기고, 3일 이상 달리지 않은 친구에게 Zzz 표시를 추가해 사용 시점을 명확히 했어요.
+        </p>
+        <p className="mt-2 text-gray-400 text-xs leading-relaxed">
+          Previously, the wake-up feature was buried in the feed and hard to tap.
+          We moved it to the friend status screen and added a Zzz marker for friends inactive for three days.
+        </p>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const Improvement3 = () => (
+  <motion.div
+    initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}
+    variants={fadeUp}
+    className="bg-blue-50/50 rounded-3xl p-8 md:p-12"
+  >
+    <div className="grid md:grid-cols-2 gap-10 items-center">
+      {/* Text */}
+      <div>
+        <SectionBadge number="3">인증 노출 방식</SectionBadge>
+        <h3 className="mt-4 text-2xl md:text-3xl font-bold text-gray-900 leading-snug">
+          리더보드 구조로 비교하기 보다<br />
+          <span className="text-blue-600">함께 인증 기록을 쌓아가는 즐거움</span>이<br />
+          느껴지도록 수정했어요
+        </h3>
+        <p className="mt-4 text-gray-500 text-sm leading-relaxed">
+          비교 중심의 리더보드에서 벗어나, 오늘 인증한 친구 수와 실시간으로 쌓이는 인증 기록을 강조해
+          친구들의 활동을 확인하고 자연스럽게 동기부여를 느낄 수 있게 했어요.
+        </p>
+        <p className="mt-2 text-gray-400 text-xs leading-relaxed">
+          We moved away from comparison-based leaderboards and emphasized today's friend activity and
+          real-time records, making it easier to stay aware and motivated.
+        </p>
+      </div>
+      {/* Mockups */}
+      <div className="flex gap-6 justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <CompareLabel type="AS-IS" />
+          <LeaderboardMockup />
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <CompareLabel type="TO-BE" />
+          <FeedMockup />
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+// ─── Case Study ───────────────────────────────────────────────────────────────
+
+const CaseStudy = () => (
+  <section id="works" className="py-24 px-4 md:px-8">
+    <div className="max-w-5xl mx-auto">
+      {/* Study Header */}
+      <motion.div
+        initial="hidden" whileInView="visible" viewport={{ once: true }}
+        variants={fadeUp}
+        className="mb-16"
+      >
+        <Tag color="blue">Usability Test</Tag>
+        <h2 className="mt-4 text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
+          UT를 통해 사용성을 검증하고,<br />
+          친구와 함께하는 경험 전반을 개선했어요
+        </h2>
+        <p className="mt-3 text-gray-400 text-sm">
+          We validated the usability through UT and improved the overall experience of running together with friends.
+        </p>
+        {/* Stats */}
+        <div className="flex flex-wrap gap-3 mt-8">
+          <StatCard label="총 응답자" value="러닝 경험자 6명" />
+          <StatCard label="기간" value="2025.09.01–07" />
+          <StatCard label="리서치 도구" value="Maze, Figma 프로토타입" />
+        </div>
+      </motion.div>
+
+      {/* Improvements */}
+      <div className="flex flex-col gap-8">
+        <Improvement1 />
+        <Improvement2 />
+        <Improvement3 />
+      </div>
+    </div>
+  </section>
+);
+
+// ─── Nav ──────────────────────────────────────────────────────────────────────
+
+const Nav = () => {
+  const [scrolled, setScrolled] = useState(false);
+
+  return (
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      scrolled ? 'bg-white/90 backdrop-blur-xl shadow-sm' : 'bg-white'
+    } border-b border-gray-100`}>
+      <div className="max-w-5xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
+        <a href="#" className="text-base font-bold text-gray-900 tracking-tight">이지원</a>
+        <div className="hidden md:flex items-center gap-8 text-sm text-gray-500 font-medium">
+          {[['About', '#about'], ['Works', '#works'], ['Contact', '#contact']].map(([label, href]) => (
+            <a key={label} href={href} className="hover:text-gray-900 transition-colors">{label}</a>
+          ))}
+        </div>
+        <a
+          href="mailto:sjso036976@gmail.com"
+          className="text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full transition-colors"
+        >
+          Contact
+        </a>
+      </div>
+    </nav>
   );
 };
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+const Hero = () => (
+  <section id="about" className="pt-28 pb-20 px-4 md:px-8">
+    <div className="max-w-5xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+        <Tag color="blue">UX Designer & Researcher</Tag>
+        <h1 className="mt-5 text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
+          사용자 경험을 <span className="text-blue-600">설계하고</span>,<br />
+          데이터로 <span className="text-blue-600">검증해요.</span>
+        </h1>
+        <p className="mt-5 text-gray-500 text-base md:text-lg leading-relaxed max-w-xl">
+          성신여자대학교 미디어커뮤니케이션학과에서 UX 리서치와 인터랙션 디자인을 공부하고 있어요.
+          사용자의 맥락을 이해하고, 그 안에서 의미 있는 경험을 만들어나갑니다.
+        </p>
+        <div className="flex flex-wrap items-center gap-3 mt-8">
+          <a
+            href="#works"
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-3 rounded-full transition-colors"
+          >
+            프로젝트 보기 <ChevronRight size={16} />
+          </a>
+          <a
+            href="mailto:sjso036976@gmail.com"
+            className="inline-flex items-center gap-2 border border-gray-200 hover:border-gray-300 text-gray-700 text-sm font-medium px-6 py-3 rounded-full transition-colors"
+          >
+            <Mail size={14} /> 이메일 보내기
+          </a>
+        </div>
+      </motion.div>
+
+      {/* Highlights */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.7 }}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16"
+      >
+        {[
+          { icon: <MapPin size={18} className="text-blue-500" />, label: '위치 기반 UX', desc: '공간 인터랙션 설계' },
+          { icon: <Bell size={18} className="text-purple-500" />, label: '알림 시스템', desc: '적시 개입 설계' },
+          { icon: <Award size={18} className="text-emerald-500" />, label: '동기부여 UX', desc: '행동 변화 디자인' },
+          { icon: <ArrowUpRight size={18} className="text-orange-500" />, label: '사용성 검증', desc: 'UT & 데이터 분석' },
+        ].map((item, i) => (
+          <div key={i} className="bg-gray-50 hover:bg-blue-50/50 rounded-2xl p-4 transition-colors border border-gray-100">
+            <div className="mb-2">{item.icon}</div>
+            <div className="text-sm font-semibold text-gray-800">{item.label}</div>
+            <div className="text-xs text-gray-400 mt-0.5">{item.desc}</div>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  </section>
+);
+
+// ─── Project Cards ────────────────────────────────────────────────────────────
+
+const projects = [
+  {
+    tag: 'Usability Test',
+    tagColor: 'blue',
+    title: '러닝 앱 친구와 함께하기 기능 개선',
+    desc: 'UT를 통해 친구 현황, 깨우기 알림, 인증 피드를 개선해 함께 달리는 경험을 강화했어요.',
+    tools: ['Maze', 'Figma', 'User Interview'],
+    year: '2025',
+    anchor: '#works',
+  },
+  {
+    tag: 'Product Design',
+    tagColor: 'purple',
+    title: '대학 커뮤니티 앱 정보 구조 재설계',
+    desc: '카드 소팅과 트리 테스트를 통해 정보 구조를 개선하고 탐색 효율을 높였어요.',
+    tools: ['OptimalSort', 'Figma'],
+    year: '2025',
+    anchor: '#',
+  },
+  {
+    tag: 'Research',
+    tagColor: 'green',
+    title: '미디어 소비 행태 리서치',
+    desc: '20대 미디어 소비 패턴 분석을 통해 콘텐츠 추천 알고리즘 개선 방향을 도출했어요.',
+    tools: ['설문조사', '심층 인터뷰'],
+    year: '2024',
+    anchor: '#',
+  },
+];
+
+const ProjectCards = () => (
+  <section className="pb-24 px-4 md:px-8 bg-white">
+    <div className="max-w-5xl mx-auto">
+      <div className="flex items-baseline justify-between mb-8">
+        <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
+        <span className="text-sm text-gray-400">Selected works</span>
+      </div>
+      <div className="grid md:grid-cols-3 gap-5">
+        {projects.map((p, i) => (
+          <motion.a
+            key={i} href={p.anchor}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.1, duration: 0.5 }}
+            className="group block bg-gray-50 hover:bg-white border border-gray-100 hover:border-blue-100 hover:shadow-md rounded-2xl p-6 transition-all"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <Tag color={p.tagColor}>{p.tag}</Tag>
+              <ArrowUpRight size={16} className="text-gray-300 group-hover:text-blue-500 transition-colors mt-0.5" />
+            </div>
+            <h3 className="text-base font-semibold text-gray-800 leading-snug mb-2">{p.title}</h3>
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">{p.desc}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {p.tools.map((t, j) => (
+                <span key={j} className="text-xs bg-white border border-gray-200 text-gray-500 px-2 py-0.5 rounded-full">{t}</span>
+              ))}
+            </div>
+            <div className="mt-4 text-xs text-gray-300 font-medium">{p.year}</div>
+          </motion.a>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
+const Footer = () => (
+  <footer id="contact" className="bg-gray-900 text-white py-20 px-4 md:px-8">
+    <div className="max-w-5xl mx-auto">
+      <div className="flex flex-col md:flex-row items-start justify-between gap-10">
+        <div>
+          <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-3">
+            함께 만들어갈<br />
+            <span className="text-blue-400">경험이 있나요?</span>
+          </h2>
+          <p className="text-gray-400 text-sm mt-4 max-w-sm leading-relaxed">
+            UX 리서치, 프로덕트 디자인, 콘텐츠 기획 분야의 협업을 환영합니다.
+            언제든 편하게 연락주세요.
+          </p>
+        </div>
+        <div className="flex flex-col gap-4">
+          <a
+            href="mailto:sjso036976@gmail.com"
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full transition-colors text-sm"
+          >
+            <Mail size={16} /> sjso036976@gmail.com
+          </a>
+          <a
+            href="https://github.com"
+            className="inline-flex items-center gap-2 border border-gray-700 hover:border-gray-500 text-gray-300 font-medium px-6 py-3 rounded-full transition-colors text-sm"
+          >
+            <Github size={16} /> GitHub
+          </a>
+        </div>
+      </div>
+      <div className="border-t border-gray-800 mt-16 pt-8 flex items-center justify-between text-xs text-gray-600">
+        <span>© 2026 이지원. All rights reserved.</span>
+        <span className="text-gray-700">UX Designer & Researcher</span>
+      </div>
+    </div>
+  </footer>
+);
+
+// ─── App ──────────────────────────────────────────────────────────────────────
+
+const App = () => (
+  <div className="min-h-screen bg-white text-gray-900 font-sans">
+    <Nav />
+    <Hero />
+    <ProjectCards />
+    <CaseStudy />
+    <Footer />
+  </div>
+);
 
 export default App;

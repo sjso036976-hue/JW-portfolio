@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second Clue: Fixed Matrix Background</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --x: 50vw;
+            --y: 50vh;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: none;
+        }
+
+        #matrixCanvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            transition: filter 0.5s ease;
+        }
+
+        .hidden-message-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .hidden-text {
+            font-size: 6vw;
+            font-weight: 700;
+            letter-spacing: 12px;
+            color: rgba(0, 255, 0, 0.04);
+            word-break: keep-all;
+        }
+
+        .revealed-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 15;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            color: #ff0000;
+            font-size: 6vw;
+            font-weight: 700;
+            letter-spacing: 12px;
+            text-shadow: 0 0 25px #ff0000, 0 0 50px #ff0000;
+            opacity: 0;
+            -webkit-mask-image: radial-gradient(circle 180px at var(--x) var(--y), rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+            mask-image: radial-gradient(circle 180px at var(--x) var(--y), rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+            transition: opacity 0.5s ease;
+            word-break: keep-all;
+        }
+
+        .spotlight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+            background: radial-gradient(circle 450px at var(--x) var(--y), rgba(255, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.6) 100%);
+        }
+
+        body.glasses-on .spotlight {
+            opacity: 1;
+        }
+
+        body.glasses-on .revealed-text {
+            opacity: 1;
+        }
+
+        body.glasses-on #matrixCanvas {
+            filter: brightness(0.8) hue-rotate(-40deg);
+        }
+
+        .cursor {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            border: 1px solid rgba(0, 255, 0, 0.6);
+            border-radius: 50%;
+            left: 0;
+            top: 0;
+            transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+            z-index: 100;
+            pointer-events: none;
+            transition: border-color 0.3s, box-shadow 0.3s, width 0.3s, height 0.3s;
+        }
+
+        body.glasses-on .cursor {
+            border-color: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            width: 70px;
+            height: 70px;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 110;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .glasses-btn {
+            background: rgba(0, 20, 0, 0.95);
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 15px 35px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+
+        .glasses-btn:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.6);
+        }
+
+        body.glasses-on .glasses-btn {
+            border-color: #ff0000;
+            color: #ff0000;
+            background: rgba(20, 0, 0, 0.95);
+        }
+
+        body.glasses-on .glasses-btn:hover {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .hint-text {
+            color: #0f0;
+            font-size: 13px;
+            opacity: 0.8;
+            letter-spacing: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        body.glasses-on .hint-text {
+            color: #ff0000;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .hidden-text, .revealed-text { font-size: 11vw; letter-spacing: 6px; }
+            body { cursor: auto; }
+            .cursor { display: none; }
+        }
+    </style>
+</head>
+<body onclick="startAudio()">
+
+    <div class="cursor"></div>
+
+    <canvas id="matrixCanvas"></canvas>
+
+    <div class="hidden-message-container">
+        <div class="hidden-text">가이드가 설계자다</div>
+    </div>
+
+    <div class="revealed-text">가이드가 설계자다</div>
+
+    <div class="spotlight"></div>
+
+    <div class="controls">
+        <div class="hint-text" id="hint">SEARCHING FOR REALITY...</div>
+        <button class="glasses-btn" onclick="toggleGlasses(event)">
+            <span id="btnText">Wear Glasses</span>
+        </button>
+    </div>
+
+    <script>
+        // --- 1. Matrix Digital Rain ---
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$+-*/=%가나다라마바사아자차카타파하';
+        const fontSize = 16;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            const isOn = document.body.classList.contains('glasses-on');
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = isOn ? '#080' : '#0F0';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 35);
+
+        // --- 2. Audio Engine ---
+        let audioCtx;
+        let drone, noise, gainNode;
+        let isAudioPlaying = false;
+
+        function initAudio() {
+            if (isAudioPlaying) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            drone = audioCtx.createOscillator();
+            drone.type = 'sawtooth';
+            drone.frequency.setValueAtTime(45, audioCtx.currentTime);
+            const lp = audioCtx.createBiquadFilter();
+            lp.type = 'lowpass';
+            lp.frequency.setValueAtTime(120, audioCtx.currentTime);
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            noise = audioCtx.createBufferSource();
+            noise.buffer = noiseBuffer;
+            noise.loop = true;
+            const bp = audioCtx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.frequency.setValueAtTime(1000, audioCtx.currentTime);
+            gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
+            drone.connect(lp).connect(gainNode);
+            noise.connect(bp).connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            drone.start();
+            noise.start();
+            isAudioPlaying = true;
+        }
+
+        function startAudio() {
+            if (!isAudioPlaying) initAudio();
+            else if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        // --- 3. Glasses Toggle ---
+        function toggleGlasses(e) {
+            e.stopPropagation();
+            startAudio();
+            const body = document.body;
+            const btnText = document.getElementById('btnText');
+            const hint = document.getElementById('hint');
+            body.classList.toggle('glasses-on');
+            if (body.classList.contains('glasses-on')) {
+                btnText.textContent = "Remove Glasses";
+                hint.textContent = "THE ARCHITECT IS NEAR...";
+                gainNode.gain.setTargetAtTime(0.14, audioCtx.currentTime, 0.4);
+            } else {
+                btnText.textContent = "Wear Glasses";
+                hint.textContent = "SEARCHING FOR REALITY...";
+                gainNode.gain.setTargetAtTime(0.06, audioCtx.currentTime, 0.4);
+            }
+        }
+
+        // --- 4. Cursor & Mask Tracking ---
+        const root = document.documentElement;
+        const updatePos = (x, y) => {
+            root.style.setProperty('--x', x + 'px');
+            root.style.setProperty('--y', y + 'px');
+        };
+
+        window.addEventListener('mousemove', e => updatePos(e.clientX, e.clientY));
+        window.addEventListener('touchmove', e => {
+            const touch = e.touches[0];
+            updatePos(touch.clientX, touch.clientY);
+        });
+    </script>
+</body>
+</html>
